@@ -1,4 +1,6 @@
 // scripts/deploy.js
+const fs = require("fs");
+const path = require("path");
 const { ethers } = require("hardhat");
 
 async function main() {
@@ -6,8 +8,32 @@ async function main() {
   const color = await Color.deploy();
 
   await color.waitForDeployment(); // ✅ new method
+  const address = await color.getAddress();
+  console.log("Token deployed to:", address); // ✅ new way to get address
 
-  console.log("Token deployed to:", await color.getAddress()); // ✅ new way to get address
+  // Get the current network ID
+  const network = await ethers.provider.getNetwork();
+  const chainId = network.chainId.toString();
+  // Load existing addresses file (if any)
+  const addressesPath = path.join(
+    __dirname,
+    "..",
+    "src",
+    "abis",
+    "addresses.json"
+  );
+  let addresses = {};
+  if (fs.existsSync(addressesPath)) {
+    addresses = JSON.parse(fs.readFileSync(addressesPath));
+  }
+  // Update the address
+  addresses[chainId] = {
+    ...(addresses[chainId] || {}),
+    Color: address,
+  };
+
+  // Save it
+  fs.writeFileSync(addressesPath, JSON.stringify(addresses, null, 2));
 }
 
 main()

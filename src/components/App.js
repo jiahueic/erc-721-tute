@@ -3,7 +3,7 @@ import logo from "../logo.png";
 import "./App.css";
 import Web3 from "web3";
 import Color from "../abis/src/contracts/Color.sol/Color.json";
-
+import Addresses from "../abis/addresses.json";
 class App extends Component {
   state = {
     account: "",
@@ -39,18 +39,27 @@ class App extends Component {
     const web3 = window.web3;
     const accounts = await web3.eth.getAccounts();
     this.setState({ account: accounts[0] });
-    // 1. Get network ID (Hardhat’s default is 31337)
-    const networkId = await web3.eth.net.getId();
-    // 2. Get deployed network info from the ABI JSON
-    const deployedNetwork = Color.networks[networkId];
-    if (!deployedNetwork) {
-      alert("Color contract not deployed to detected network.");
+
+    // Use chainId instead of netId
+    const chainId = await web3.eth.getChainId();
+    console.log("Chain ID:", chainId); // ✅ e.g., 1337 (Ganache), 31337 (Hardhat)
+
+    console.log("Full Addresses object:", Addresses); // Debugging
+    const chainKey = chainId.toString();
+    const contractData = Addresses[chainKey];
+    console.log("contractData:", contractData); // Debugging
+
+    const contractAddress = contractData.Color;
+
+    if (!contractAddress) {
+      alert("Color contract not deployed to detected chain.");
       return;
     }
-    // 3. Instantiate the contract
-    const contract = new web3.eth.Contract(Color.abi, deployedNetwork.address);
+
+    const contract = new web3.eth.Contract(Color.abi, contractAddress);
     this.setState({ colorContract: contract });
   }
+
   render() {
     return (
       <div>
