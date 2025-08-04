@@ -9,6 +9,10 @@ async function main() {
 
   await color.waitForDeployment(); // ✅ new method
   const address = await color.getAddress();
+  await color.mint("#1fab89");
+  await color.mint("#ff8080");
+  await color.mint("#ffba92");
+  await color.mint("#cbf1d6");
   console.log("Token deployed to:", address); // ✅ new way to get address
 
   // Get the current network ID

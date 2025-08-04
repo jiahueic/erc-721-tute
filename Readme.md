@@ -5,6 +5,9 @@ https://erc721.org/
 https://youtu.be/YPbgjPPC1d0
 https://github.com/jiahueic/erc-20-tutorial/tree/main
 https://web3js.readthedocs.io/en/v1.10.0/getting-started.html
+https://web3js.readthedocs.io/en/v1.10.0/web3-eth-contract.html
+https://web3js.readthedocs.io/en/v1.2.11/web3-eth-contract.html#methods-mymethod-call
+https://web3js.readthedocs.io/en/v1.2.11/web3-eth-contract.html#methods-mymethod-send
 ```
 
 # Initialize proj struct
@@ -150,3 +153,48 @@ Think of it as:
 🛎️ “The component is now visible. Go ahead and fetch data, set things up, or interact with the outside world!”
 
 constructor() ➡️ render() ➡️ componentDidMount()
+
+### Web3 Contract 101
+
+🟢 .call() — Read-only operations
+Used for view or pure functions (that do not change state).
+
+Free (no gas, no transaction).
+
+Executed locally on your node (no mining).
+
+Returns a result immediately.
+
+```sh
+const name = await contract.methods.name().call();
+```
+
+✅ Use .call() when:
+
+- Reading token balances, owner addresses, mappings
+
+- Querying constant values
+
+- You don’t want to change the blockchain
+
+🔴 .send() — State-changing operations
+
+- Used for functions that modify contract state (e.g. mint(), transfer(), setSomething()).
+
+- Costs gas.
+
+- Creates a transaction that gets mined.
+
+- Requires a connected wallet (e.g. MetaMask) and user signature.
+
+```sh
+await contract.methods.mint("#FF5733").send({ from: account });
+```
+
+✅ Use .send() when:
+
+- Minting or transferring tokens
+
+- Updating variables in storage
+
+- Writing data on-chain
